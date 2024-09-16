@@ -20,17 +20,18 @@ def set_env_var(path):
         os.environ['PATH'] = new_path
         # Atualiza a variável de ambiente do sistema
         reg_key = r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment'
-        ctypes.windll.advapi32.RegSetValueExW(
-            ctypes.windll.advapi32.RegOpenKeyExW(
-                0x80000000, reg_key, 0, 0x20006
-            ), 
-            'Path', 0, 1, new_path.encode('utf-16le'), len(new_path.encode('utf-16le'))
+        reg_handle = ctypes.windll.advapi32.RegOpenKeyExW(
+            0x80000000, reg_key, 0, 0x20006
         )
+        ctypes.windll.advapi32.RegSetValueExW(
+            reg_handle, 'Path', 0, 1, new_path.encode('utf-16le'), len(new_path.encode('utf-16le'))
+        )
+        ctypes.windll.advapi32.RegCloseKey(reg_handle)
         print(f'Variável de ambiente PATH atualizada com: {path}')
 
 def install_bos():
     """Instala o BOS e configura a variável de ambiente."""
-    bos_url = 'https://github.com/SEU_USUARIO/bos-installer/raw/main/bos.py'
+    bos_url = 'https://raw.githubusercontent.com/bruno1994122/bos-installer/main/bos.py'
     download_file(bos_url, 'bos.py')
 
     print("Escolha onde instalar o BOS:")
